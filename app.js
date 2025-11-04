@@ -1,77 +1,54 @@
 const API_BASE = "https://lespronos2mada-backend.onrender.com/api";
 
 // Sélecteurs HTML
-const home = document.getElementById('home');
-const list = document.getElementById('list');
-const title = document.getElementById('title');
-const backBtn = document.getElementById('back');
+const home = document.getElementById("home");
+const list = document.getElementById("list");
+const matches = document.getElementById("matches");
+const backBtn = document.getElementById("back");
 
-// → Retour
+// ✅ Bouton retour
 backBtn.addEventListener("click", () => {
-    home.style.display = "block";
-    list.style.display = "none";
+  home.classList.remove("hidden");
+  list.classList.add("hidden");
 });
 
-// ----------------------------
-// ✅ Charger l'accueil (boutons ligues)
-// ----------------------------
-async function loadLeagues() {
-    // Pas besoin de récupérer les ligues via API
-    title.innerText = "Les Pronos 2 Mada";
-    home.style.display = "block";
-    list.style.display = "none";
+// ✅ Click sur les boutons ligues (data-lid)
+document.querySelectorAll("[data-lid]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const leagueId = btn.getAttribute("data-lid");
+    loadLeagueFixtures(leagueId);
+  });
+});
 
-    // Activation des boutons
-    document.getElementById("ligue1").onclick = () => loadLeagueFixtures(61);
-    document.getElementById("premierleague").onclick = () => loadLeagueFixtures(39);
-    document.getElementById("laliga").onclick = () => loadLeagueFixtures(140);
-    document.getElementById("seriea").onclick = () => loadLeagueFixtures(135);
-    document.getElementById("bundesliga").onclick = () => loadLeagueFixtures(78);
-    document.getElementById("ucl").onclick = () => loadLeagueFixtures(2);
-}
-
-// ----------------------------
-// ✅ Charger les Matchs d’une Ligue
-// ----------------------------
+// ✅ Charger les matchs d’une ligue
 async function loadLeagueFixtures(leagueId) {
-    try {
-        home.style.display = "none";
-        list.style.display = "block";
+  try {
+    home.classList.add("hidden");
+    list.classList.remove("hidden");
 
-        title.innerText = "Compétitions";
+    matches.innerHTML = "<div>Chargement…</div>";
 
-        const response = await fetch(`${API_BASE}/fixtures?league=${leagueId}`);
-        const fixtures = await response.json();
+    const response = await fetch(`${API_BASE}/fixtures?league=${leagueId}`);
+    const fixtures = await response.json();
 
-        if (!Array.isArray(fixtures)) {
-            list.innerHTML = "<p>Erreur API. Réessaie plus tard.</p>";
-            return;
-        }
-
-        if (fixtures.length === 0) {
-            list.innerHTML = "<p>Aucun match trouvé aujourd’hui.</p>";
-            return;
-        }
-
-        // ✅ Affichage des matchs
-        list.innerHTML = fixtures.map(match => `
-            <div class="match">
-                <div class="teams">
-                    <span>${match.home.name}</span>
-                    <span>vs</span>
-                    <span>${match.away.name}</span>
-                </div>
-                <div class="info">
-                    <small>${match.date}</small>
-                </div>
-            </div>
-        `).join("");
-
-    } catch (err) {
-        console.error(err);
-        list.innerHTML = "Erreur API (clé ? quota ?). Réessaie plus tard.";
+    if (!Array.isArray(fixtures) || fixtures.length === 0) {
+      matches.innerHTML = "<p>Aucun match trouvé aujourd’hui.</p>";
+      return;
     }
-}
 
-// ✅ Lancer l’app
-loadLeagues();
+    matches.innerHTML = fixtures
+      .map(match => `
+      <div class="match">
+        <div>
+          <div><strong>${match.home.name}</strong> vs <strong>${match.away.name}</strong></div>
+          <div class="small">${new Date(match.date).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+        </div>
+      </div>
+    `)
+      .join("");
+
+  } catch (err) {
+    console.error(err);
+    matches.innerHTML = "<p>Erreur API. Réessaie plus tard.</p>";
+  }
+}
