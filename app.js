@@ -1,0 +1,1 @@
+console.log('LP2M loaded');
