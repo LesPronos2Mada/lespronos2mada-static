@@ -52,7 +52,7 @@ async function loadLeagueFixtures(leagueId) {
 
         title.innerText = "Compétitions";
 
-        const response = await fetch(`${API_BASE}/fixtures/${leagueId}`);
+        const response = await fetch(`${API_BASE}/fixtures?league=${leagueId}`)
         const fixtures = await response.json();
 
         if (!Array.isArray(fixtures)) {
