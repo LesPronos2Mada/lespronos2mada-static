@@ -1,25 +1,84 @@
 const API_BASE = "https://lespronos2mada-backend.onrender.com/api";
 
+// Sélecteurs HTML
+const home = document.getElementById('home');
+const list = document.getElementById('list');
+const title = document.getElementById('title');
+const backBtn = document.getElementById('back');
+
+// → Retour en arrière
+backBtn.addEventListener("click", () => {
+    home.style.display = "block";
+    list.style.display = "none";
+});
+
+// ----------------------------
+// ✅ Charger les Ligues
+// ----------------------------
 async function loadLeagues() {
     try {
+        title.innerText = "Les Pronos 2 Mada";
+        home.style.display = "block";
+        list.style.display = "none";
+
         const response = await fetch(`${API_BASE}/leagues`);
-        const data = await response.json();
-        console.log(data);
-        // Mets ici ton affichage
+        const leagues = await response.json();
+
+        if (!Array.isArray(leagues)) {
+            throw new Error("Format API inattendu");
+        }
+
+        // Mettre les boutons dans la page
+        document.getElementById("ligue1").onclick = () => loadLeagueFixtures(61);
+        document.getElementById("premierleague").onclick = () => loadLeagueFixtures(39);
+        document.getElementById("laliga").onclick = () => loadLeagueFixtures(140);
+        document.getElementById("seriea").onclick = () => loadLeagueFixtures(135);
+        document.getElementById("bundesliga").onclick = () => loadLeagueFixtures(78);
+        document.getElementById("ucl").onclick = () => loadLeagueFixtures(2);
+
     } catch (err) {
+        console.error(err);
         document.body.innerHTML = "Erreur API. Essaie plus tard.";
     }
 }
 
+// ----------------------------
+// ✅ Charger les Matchs d’une Ligue
+// ----------------------------
 async function loadLeagueFixtures(leagueId) {
     try {
+        home.style.display = "none";
+        list.style.display = "block";
+
+        title.innerText = "Compétitions";
+
         const response = await fetch(`${API_BASE}/fixtures/${leagueId}`);
-        const data = await response.json();
-        console.log(data);
-        // Affichage
+        const fixtures = await response.json();
+
+        if (!Array.isArray(fixtures)) {
+            list.innerHTML = "<p>Erreur API. Réessaie plus tard.</p>";
+            return;
+        }
+
+        // → Affichage des matchs
+        list.innerHTML = fixtures.map(match => `
+            <div class="match">
+                <div class="teams">
+                    <span>${match.home}</span>
+                    <span>vs</span>
+                    <span>${match.away}</span>
+                </div>
+                <div class="info">
+                    <small>${match.date}</small>
+                </div>
+            </div>
+        `).join("");
+
     } catch (err) {
-        document.body.innerHTML = "Erreur API (clé ? quota ?). Réessaie plus tard.";
+        console.error(err);
+        list.innerHTML = "Erreur API (clé ? quota ?). Réessaie plus tard.";
     }
 }
 
+// ✅ Lancer l’app
 loadLeagues();
