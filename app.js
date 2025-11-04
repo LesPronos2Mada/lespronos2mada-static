@@ -6,40 +6,28 @@ const list = document.getElementById('list');
 const title = document.getElementById('title');
 const backBtn = document.getElementById('back');
 
-// → Retour en arrière
+// → Retour
 backBtn.addEventListener("click", () => {
     home.style.display = "block";
     list.style.display = "none";
 });
 
 // ----------------------------
-// ✅ Charger les Ligues
+// ✅ Charger l'accueil (boutons ligues)
 // ----------------------------
 async function loadLeagues() {
-    try {
-        title.innerText = "Les Pronos 2 Mada";
-        home.style.display = "block";
-        list.style.display = "none";
+    // Pas besoin de récupérer les ligues via API
+    title.innerText = "Les Pronos 2 Mada";
+    home.style.display = "block";
+    list.style.display = "none";
 
-        const response = await fetch(`${API_BASE}/leagues`);
-        const leagues = await response.json();
-
-        if (!Array.isArray(leagues)) {
-            throw new Error("Format API inattendu");
-        }
-
-        // Mettre les boutons dans la page
-        document.getElementById("ligue1").onclick = () => loadLeagueFixtures(61);
-        document.getElementById("premierleague").onclick = () => loadLeagueFixtures(39);
-        document.getElementById("laliga").onclick = () => loadLeagueFixtures(140);
-        document.getElementById("seriea").onclick = () => loadLeagueFixtures(135);
-        document.getElementById("bundesliga").onclick = () => loadLeagueFixtures(78);
-        document.getElementById("ucl").onclick = () => loadLeagueFixtures(2);
-
-    } catch (err) {
-        console.error(err);
-        document.body.innerHTML = "Erreur API. Essaie plus tard.";
-    }
+    // Activation des boutons
+    document.getElementById("ligue1").onclick = () => loadLeagueFixtures(61);
+    document.getElementById("premierleague").onclick = () => loadLeagueFixtures(39);
+    document.getElementById("laliga").onclick = () => loadLeagueFixtures(140);
+    document.getElementById("seriea").onclick = () => loadLeagueFixtures(135);
+    document.getElementById("bundesliga").onclick = () => loadLeagueFixtures(78);
+    document.getElementById("ucl").onclick = () => loadLeagueFixtures(2);
 }
 
 // ----------------------------
@@ -52,7 +40,7 @@ async function loadLeagueFixtures(leagueId) {
 
         title.innerText = "Compétitions";
 
-        const response = await fetch(`${API_BASE}/fixtures?league=${leagueId}`)
+        const response = await fetch(`${API_BASE}/fixtures?league=${leagueId}`);
         const fixtures = await response.json();
 
         if (!Array.isArray(fixtures)) {
@@ -60,13 +48,18 @@ async function loadLeagueFixtures(leagueId) {
             return;
         }
 
-        // → Affichage des matchs
+        if (fixtures.length === 0) {
+            list.innerHTML = "<p>Aucun match trouvé aujourd’hui.</p>";
+            return;
+        }
+
+        // ✅ Affichage des matchs
         list.innerHTML = fixtures.map(match => `
             <div class="match">
                 <div class="teams">
-                    <span>${match.home}</span>
+                    <span>${match.home.name}</span>
                     <span>vs</span>
-                    <span>${match.away}</span>
+                    <span>${match.away.name}</span>
                 </div>
                 <div class="info">
                     <small>${match.date}</small>
