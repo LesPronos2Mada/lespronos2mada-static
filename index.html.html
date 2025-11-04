@@ -1,1 +1,44 @@
-<!doctype html><html><body><h1>Les Pronos 2 Mada</h1></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Les Pronos 2 Mada</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#000" />
+  <style>
+    body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,sans-serif;background:#0b0c10;color:#f5f5f5}
+    header{padding:16px;font-weight:700;border-bottom:1px solid #1f2229;position:sticky;top:0;background:#0b0c10}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px}
+    .card{background:#111318;border:1px solid #1f2229;border-radius:12px;padding:12px;text-align:center}
+    button{width:100%;padding:12px;border-radius:10px;background:#1a2130;border:1px solid #2a3448;color:#fff;font-weight:700}
+    .list{padding:16px}
+    .match{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #1f2229}
+    .small{font-size:12px;opacity:.85}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+<header>Les Pronos 2 Mada</header>
+
+<main id="app">
+  <section id="home">
+    <div class="grid">
+      <div class="card"><button data-lid="61">Ligue 1</button></div>
+      <div class="card"><button data-lid="39">Premier League</button></div>
+      <div class="card"><button data-lid="140">LaLiga</button></div>
+      <div class="card"><button data-lid="135">Serie A</button></div>
+      <div class="card"><button data-lid="78">Bundesliga</button></div>
+      <div class="card"><button data-lid="2">Ligue des Champions</button></div>
+    </div>
+  </section>
+
+  <section id="list" class="hidden">
+    <div style="padding:12px"><button id="back">← Compétitions</button></div>
+    <div class="list" id="matches"></div>
+  </section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
